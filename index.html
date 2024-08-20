@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolide Referral Rank Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+        #result {
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Check Your Referral Rank</h1>
+    <input type="text" id="walletAddress" placeholder="Enter your wallet address">
+    <button onclick="checkRank()">Check Rank</button>
+    <p id="result"></p>
+
+    <script>
+        let wallets = [];
+        let inviteCounts = [];
+
+        // Load wallets and invite counts from text files
+        fetch('wallets.txt')
+            .then(response => response.text())
+            .then(data => {
+                wallets = data.trim().split('\n');
+            });
+
+        fetch('invite_counts.txt')
+            .then(response => response.text())
+            .then(data => {
+                inviteCounts = data.trim().split('\n').map(Number);
+            });
+
+        function checkRank() {
+            const walletAddress = document.getElementById('walletAddress').value.trim();
+            const index = wallets.indexOf(walletAddress);
+
+            if (index !== -1) {
+                const sortedIndexes = [...inviteCounts.keys()].sort((a, b) => inviteCounts[b] - inviteCounts[a]);
+                const rank = sortedIndexes.indexOf(index) + 1;
+
+                document.getElementById('result').innerHTML = `
+                    <strong>Wallet Address:</strong> ${walletAddress} <br>
+                    <strong>Your Rank:</strong> ${rank} <br>
+                    <strong>Invite Count:</strong> ${inviteCounts[index]}
+                `;
+            } else {
+                document.getElementById('result').innerText = 'Wallet address not found.';
+            }
+        }
+    </script>
+</body>
+</html>
